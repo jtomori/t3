@@ -1,2 +1,2 @@
-# t3
-TipToi Translation
+# TipToi Translation (t3)
+
