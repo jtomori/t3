@@ -1,2 +1,4 @@
 gme
 ogg
+venv
+*.pyc
