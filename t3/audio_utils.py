@@ -1,10 +1,10 @@
 """Various audio utilities."""
 
 import sox
-from silero_vad import load_silero_vad, read_audio, get_speech_timestamps
+import silero_vad
 
 
-MODEL = load_silero_vad()
+MODEL = silero_vad.load_silero_vad()
 
 
 def detect_speech(audio_path: str, threshold: float = 0.8) -> bool:
@@ -17,8 +17,8 @@ def detect_speech(audio_path: str, threshold: float = 0.8) -> bool:
     Returns:
         Whether a speech was detected or not
     """
-    audio = read_audio(audio_path)
-    speech_timestamps = get_speech_timestamps(audio, MODEL, threshold=threshold, return_seconds=True)
+    audio = silero_vad.read_audio(audio_path)
+    speech_timestamps = silero_vad.get_speech_timestamps(audio, MODEL, threshold=threshold, return_seconds=True)
 
     return bool(speech_timestamps)
 
