@@ -1,6 +1,6 @@
 import unittest
 
-from t3 import vad
+from t3 import audio_utils
 
 
 PURE_VOICE = [4, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]  # Voice without any background sounds
@@ -13,22 +13,30 @@ class VAD(unittest.TestCase):
     def test_pure_voice(self):
         for id in PURE_VOICE:
             with self.subTest(id):
-                self.assertTrue(vad.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
+                self.assertTrue(audio_utils.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
 
     def test_no_voice(self):
         for id in NO_VOICE:
             with self.subTest(id):
-                self.assertFalse(vad.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
+                self.assertFalse(audio_utils.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
 
     def test_voice_bg_sounds(self):
         for id in VOICE_BG_SOUNDS:
             with self.subTest(id):
-                self.assertTrue(vad.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
+                self.assertTrue(audio_utils.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
 
     def test_songs(self):
         for id in SONGS:
             with self.subTest(id):
-                self.assertTrue(vad.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
+                self.assertTrue(audio_utils.detect_speech(f"ogg/Mein Woerter-Bilderbuch Unser Zuhause_{id}.ogg"))
+
+
+class Various(unittest.TestCase):
+    def test_too_long_1(self):
+        self.assertFalse(audio_utils.check_audio_length("ogg/Mein Woerter-Bilderbuch Unser Zuhause_0.ogg"))
+
+    def test_too_long_2(self):
+        self.assertTrue(audio_utils.check_audio_length("ogg/Mein Woerter-Bilderbuch Unser Zuhause_4.ogg"))
 
 
 if __name__ == "__main__":
