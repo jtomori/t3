@@ -1,0 +1,1 @@
+"""TipToi Translation."""

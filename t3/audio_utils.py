@@ -7,7 +7,7 @@ from silero_vad import load_silero_vad, read_audio, get_speech_timestamps
 MODEL = load_silero_vad()
 
 
-def detect_speech(audio_path: str, threshold: float=0.8) -> bool:
+def detect_speech(audio_path: str, threshold: float = 0.8) -> bool:
     """Detect human speech in the audio in `audio_path`, given some confidence `threshold`.
 
     Args:
@@ -23,7 +23,7 @@ def detect_speech(audio_path: str, threshold: float=0.8) -> bool:
     return bool(speech_timestamps)
 
 
-def check_audio_length(audio_path: str, max_length: float=40) -> bool:
+def check_audio_length(audio_path: str, max_length: float = 40) -> bool:
     """Detect if the audio file in `audio_path` is within the desired duration target (<= `max_length`). Too long audio clips would lead into out of memory errors in the S2ST inference.
 
     Args:
