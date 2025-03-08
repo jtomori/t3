@@ -1,0 +1,5 @@
+{
+    "terminal.integrated.env.linux": {
+        "PYTHONBREAKPOINT": "ipdb.set_trace"
+    }
+}

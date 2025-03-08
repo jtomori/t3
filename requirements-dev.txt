@@ -1,0 +1,6 @@
+ipython
+ipdb
+pylint
+pydocstyle
+flake8
+mypy
