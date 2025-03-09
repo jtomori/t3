@@ -42,12 +42,23 @@ class Various(unittest.TestCase):
 
 class S2ST(unittest.TestCase):
     def test_inference(self):
-        s2st.translate_audio_files(
-            ["ogg/Mein Woerter-Bilderbuch Unser Zuhause_4.ogg"],
+        out = s2st.translate_audio_files(
+            ["ogg/Mein Woerter-Bilderbuch Unser Zuhause_4.ogg", "ogg/Mein Woerter-Bilderbuch Unser Zuhause_9.ogg"],
             "tmp",
             force_cpu=True
         )
-        self.assertTrue(os.path.exists("tmp/Mein Woerter-Bilderbuch Unser Zuhause_4.mp3"))
+
+        path_1 = out[0].path
+        text_1 = out[0].text
+        path_2 = out[1].path
+        text_2 = out[1].text
+
+        self.assertTrue(os.path.exists(path_1))
+        self.assertEqual(path_1, "tmp/Mein Woerter-Bilderbuch Unser Zuhause_4.mp3")
+        self.assertEqual(text_1, "Welcome to the Hoffmann family. Lara and Papa are just returning from shopping. The two of them went to the market. They bought fresh fruit and vegetables. Rocky, the family's dog, runs up to them cheerfully barking. At the front door, Mama is standing and talking to Aunt Julia. Lara's brothers, Finn and David, are also there.")
+
+        self.assertTrue(os.path.exists(path_2))
+        self.assertEqual(path_2, "tmp/Mein Woerter-Bilderbuch Unser Zuhause_9.mp3")
 
 
 if __name__ == "__main__":

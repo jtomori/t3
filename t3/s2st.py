@@ -9,6 +9,7 @@ import torch
 import argparse
 import torchaudio
 from pathlib import Path
+from typing import NamedTuple
 from fairseq2.data import SequenceData
 from seamless_communication.inference import Translator
 from fairseq2.data.audio import WaveformToFbankConverter
@@ -19,16 +20,30 @@ from seamless_communication.cli.expressivity.predict.pretssel_generator import P
 from seamless_communication.cli.expressivity.predict.predict import remove_prosody_tokens_from_text
 
 
-def translate_audio_files(input_paths: list[str],
+class TranslatedAudio(NamedTuple):
+    """Hold results of a translated audio. This is intended to hold data returned by `translate_audio_files()`."""
+    path: str
+    text: str
+
+
+def translate_audio_files(input_paths: list[str],  # pylint: disable=too-many-arguments, too-many-locals
                           output_directory: str,
                           *,
                           target_language: str = "eng",
                           model_name: str = "seamless_expressivity",
                           vocoder_name: str = "vocoder_pretssel",
                           duration_factor: float = 1.0,
-                          force_cpu: bool = False
-                          ):
-    """Translate audio files specified in `input_paths`, saving them into the `output_directory`."""
+                          force_cpu: bool = False) -> list[TranslatedAudio]:
+    """Translate audio files specified in `input_paths`, saving them into the `output_directory`.
+
+    Args:
+        input_paths: Files to be translated
+        output_directory: Destination of translated audio, audio files will be in mp3 format
+        force_cpu: Force CPU inference even if a GPU is available (but when it doesn't have enough memory)
+
+    Returns:
+        Tuple of the output path and transcript
+    """
     # Inference setup
     add_gated_assets(Path("SeamlessExpressive"))
 
@@ -80,6 +95,9 @@ def translate_audio_files(input_paths: list[str],
 
     # Output directory
     os.makedirs(output_directory, exist_ok=True)
+
+    # List which will be returned
+    out = []
 
     # Per-audio file inference
     for path in input_paths:
@@ -142,4 +160,7 @@ def translate_audio_files(input_paths: list[str],
 
         # Print transcript
         text_out = remove_prosody_tokens_from_text(str(text_output[0]))
-        print(text_out)
+
+        out.append(TranslatedAudio(output_path, text_out))
+
+    return out
