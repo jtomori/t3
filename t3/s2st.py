@@ -4,9 +4,11 @@ Repo: https://github.com/facebookresearch/seamless_communication
 Inference is based on: https://github.com/facebookresearch/seamless_communication/blob/90e2b57ac4d82fa2bfaa25caeffe39ceb8b2ebec/src/seamless_communication/cli/expressivity/predict/predict.py
 """
 
+import os
 import torch
 import argparse
 import torchaudio
+from pathlib import Path
 from fairseq2.data import SequenceData
 from seamless_communication.inference import Translator
 from fairseq2.data.audio import WaveformToFbankConverter
@@ -22,16 +24,22 @@ def translate_audio_files(input_paths: list[str],
                           *,
                           target_language: str = "eng",
                           model_name: str = "seamless_expressivity",
-                          vocoder_name: str = "vocoder_v2",
+                          vocoder_name: str = "vocoder_pretssel",
+                          duration_factor: float = 1.0,
+                          force_cpu: bool = False
                           ):
     """Translate audio files specified in `input_paths`, saving them into the `output_directory`."""
     # Inference setup
-    add_gated_assets("SeamlessExpressive")
+    add_gated_assets(Path("SeamlessExpressive"))
 
     if torch.cuda.is_available():
         device = torch.device("cuda:0")
         dtype = torch.float16
     else:
+        device = torch.device("cpu")
+        dtype = torch.float32
+
+    if force_cpu:  # For tests
         device = torch.device("cpu")
         dtype = torch.float32
 
@@ -67,8 +75,11 @@ def translate_audio_files(input_paths: list[str],
     # Args hacking
     parser = argparse.ArgumentParser(description="Running SeamlessExpressive inference.")
     parser = add_inference_arguments(parser)
-    args = parser.parse_args()
+    args = parser.parse_args([])
     text_generation_opts, unit_generation_opts = set_generation_opts(args)
+
+    # Output directory
+    os.makedirs(output_directory, exist_ok=True)
 
     # Per-audio file inference
     for path in input_paths:
@@ -106,7 +117,7 @@ def translate_audio_files(input_paths: list[str],
             text_generation_opts=text_generation_opts,
             unit_generation_opts=unit_generation_opts,
             unit_generation_ngram_filtering=args.unit_generation_ngram_filtering,
-            duration_factor=args.duration_factor,
+            duration_factor=duration_factor,
             prosody_encoder_input=src_gcmvn,
         )
 
@@ -117,13 +128,18 @@ def translate_audio_files(input_paths: list[str],
             prosody_encoder_input=src_gcmvn,
         )
 
-        # TBD - where the audio is saved
+        # File name
+        file_name = os.path.basename(path)
+        file_name_base, _ = os.path.splitext(file_name)
+        output_path = os.path.join(output_directory, f"{file_name_base}.mp3")
+
+        # Save
         torchaudio.save(
-            args.output_path,  # TBD
+            output_path,
             speech_output.audio_wavs[0][0].to(torch.float32).cpu(),
             sample_rate=speech_output.sample_rate,
         )
 
-        # TBD - transcript
+        # Print transcript
         text_out = remove_prosody_tokens_from_text(str(text_output[0]))
         print(text_out)

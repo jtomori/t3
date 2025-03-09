@@ -1,6 +1,7 @@
+import os
 import unittest
 
-from t3 import audio_utils
+from t3 import audio_utils, s2st
 
 
 PURE_VOICE = [4, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]  # Voice without any background sounds
@@ -37,6 +38,16 @@ class Various(unittest.TestCase):
 
     def test_too_long_2(self):
         self.assertTrue(audio_utils.check_audio_length("ogg/Mein Woerter-Bilderbuch Unser Zuhause_4.ogg"))
+
+
+class S2ST(unittest.TestCase):
+    def test_inference(self):
+        s2st.translate_audio_files(
+            ["ogg/Mein Woerter-Bilderbuch Unser Zuhause_4.ogg"],
+            "tmp",
+            force_cpu=True
+        )
+        self.assertTrue(os.path.exists("tmp/Mein Woerter-Bilderbuch Unser Zuhause_4.mp3"))
 
 
 if __name__ == "__main__":
