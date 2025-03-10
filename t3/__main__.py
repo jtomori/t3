@@ -76,8 +76,12 @@ def main():
     # Build report
     # TODO
 
+    # Copy filelist
+    filelist_src, filelist_dst = os.path.join(extracted_dir, "filelist.txt"), os.path.join(final_dir, "filelist.txt")
+    shutil.copyfile(filelist_src, filelist_dst)
+    log.info(f"Copied '{filelist_src}' -> '{filelist_dst}'")
+
     # Insert new audios into the GME
-    # TODO
 
 
 def checks() -> None:
@@ -87,7 +91,6 @@ def checks() -> None:
         AssertionError: Indicates a failed check
     """
     assert os.path.exists("SeamlessExpressive"), "The SeamlessExpressive folder was not found in repository's root. Please check README.md for setup instructions."
-    assert shutil.which("tttool") is not None, "'tttool' was not found, please check README.md for setup instructions."
 
 
 def create_folders(work_dir: str) -> None:
@@ -107,8 +110,14 @@ def extract_ogg(input_gme_path, extracted_dir) -> list[str]:
 
     TBD
     """
-    cmd = ["tttool", "media", "-d", extracted_dir, input_gme_path]
-    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    cmd = ["./libtiptoi", "x", f"{extracted_dir}/", input_gme_path]
+
+    try:
+        subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as exc:
+        # libtiptoi returns 1 upon success
+        if exc.returncode == 1:
+            pass
 
     return glob.glob(os.path.join(extracted_dir, "*.ogg"))
 
