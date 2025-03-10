@@ -24,7 +24,7 @@ def detect_speech(audio_path: str, threshold: float = 0.8) -> bool:
     return bool(speech_timestamps)
 
 
-def check_audio_length(audio_path: str, max_length: float = 40) -> bool:
+def check_audio_length(audio_path: str, max_length: float = 50) -> bool:
     """Detect if the audio file in `audio_path` is within the desired duration target (<= `max_length`). Too long audio clips would lead into out of memory errors in the S2ST inference.
 
     Args:
