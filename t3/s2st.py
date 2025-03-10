@@ -8,6 +8,7 @@ import os
 import torch
 import argparse
 import torchaudio
+from tqdm import tqdm
 from pathlib import Path
 from typing import NamedTuple
 from fairseq2.data import SequenceData
@@ -100,7 +101,7 @@ def translate_audio_files(input_paths: list[str],  # pylint: disable=too-many-ar
     out = []
 
     # Per-audio file inference
-    for path in input_paths:
+    for path in tqdm(input_paths, unit="translation", leave=False):
         wav, sample_rate = torchaudio.load(path)
         wav = torchaudio.functional.resample(wav, orig_freq=sample_rate, new_freq=16_000)
         wav = wav.transpose(0, 1)
@@ -150,17 +151,21 @@ def translate_audio_files(input_paths: list[str],  # pylint: disable=too-many-ar
         file_name = os.path.basename(path)
         file_name_base, _ = os.path.splitext(file_name)
         output_path = os.path.join(output_directory, f"{file_name_base}.mp3")
+        text_path = os.path.join(output_directory, f"{file_name_base}.txt")
 
-        # Save
+        # Save audio file
         torchaudio.save(
             output_path,
             speech_output.audio_wavs[0][0].to(torch.float32).cpu(),
             sample_rate=speech_output.sample_rate,
         )
 
-        # Print transcript
-        text_out = remove_prosody_tokens_from_text(str(text_output[0]))
+        # Save transcript
+        text = remove_prosody_tokens_from_text(str(text_output[0]))
 
-        out.append(TranslatedAudio(output_path, text_out))
+        with open(text_path, "w", encoding="utf-8") as f:
+            f.write(text)
+
+        out.append(TranslatedAudio(output_path, text))
 
     return out

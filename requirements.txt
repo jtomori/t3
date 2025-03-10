@@ -1,3 +1,4 @@
 seamless_communication @ git+https://github.com/facebookresearch/seamless_communication@90e2b57
 silero-vad == 5.1.2
 sox == 1.5.0
+tqdm == 4.67.1
