@@ -1,6 +1,7 @@
 """Various audio utilities."""
 
 import sox
+import subprocess
 import silero_vad
 
 
@@ -42,3 +43,9 @@ def check_audio_length(audio_path: str, max_length: float = 40) -> bool:
         raise ValueError(f"'{audio_path}': audio length could not be determined")
 
     return length <= max_length
+
+
+def convert_mp3_to_ogg(in_path: str, out_path: str, *, quality: int = 0, sampling_rate: int = 22_050):
+    """TBD"""
+    cmd = ["ffmpeg", "-y", "-hide_banner", "-i", in_path, "-c:a", "libvorbis", "-q:a", str(quality), "-ar", str(sampling_rate), out_path]
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
