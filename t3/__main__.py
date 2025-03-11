@@ -211,7 +211,7 @@ def create_gme(workdir_path: str, filelist_path: str, input_gme_path: str) -> st
     cmd = ["./libtiptoi", "r", filelist_path, new_path, input_gme_path]
 
     try:
-        subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+        subprocess.check_call(cmd)
     except subprocess.CalledProcessError as exc:
         # libtiptoi returns 1 upon success
         if exc.returncode == 1:
