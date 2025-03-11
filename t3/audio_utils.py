@@ -45,7 +45,10 @@ def check_audio_length(audio_path: str, max_length: float = 50) -> bool:
     return length <= max_length
 
 
-def convert_mp3_to_ogg(in_path: str, out_path: str, *, quality: int = 0, sampling_rate: int = 22_050):
+def convert_mp3_to_ogg(in_path: str, out_path: str, *, quality: int = 0,
+                       sampling_rate: int = 22_050, volume: float = 1.75) -> None:
     """TBD"""
-    cmd = ["ffmpeg", "-y", "-hide_banner", "-i", in_path, "-c:a", "libvorbis", "-q:a", str(quality), "-ar", str(sampling_rate), out_path]
+    cmd = ["ffmpeg", "-y", "-hide_banner", "-i", in_path, "-c:a", "libvorbis", "-q:a", str(quality), 
+           "-ar", str(sampling_rate), "-filter:a", f"volume={volume}", out_path]
+
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
