@@ -35,7 +35,7 @@ def translate_audio_files(input_paths: list[str],  # pylint: disable=too-many-ar
                           vocoder_name: str = "vocoder_pretssel",
                           duration_factor: float = 1.0,
                           force_cpu: bool = False) -> list[TranslatedAudio]:
-    """Translate audio files specified in `input_paths`, saving them into the `output_directory`.
+    """Translate audio files specified in `input_paths`, saving them (along with transcripts) into the `output_directory`.
 
     Args:
         input_paths: Files to be translated

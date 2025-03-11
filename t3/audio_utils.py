@@ -47,8 +47,16 @@ def check_audio_length(audio_path: str, max_length: float = 50) -> bool:
 
 def convert_mp3_to_ogg(in_path: str, out_path: str, *, quality: int = 0,
                        sampling_rate: int = 22_050, volume: float = 2.3) -> None:
-    """TBD"""
-    cmd = ["ffmpeg", "-y", "-hide_banner", "-i", in_path, "-c:a", "libvorbis", "-q:a", str(quality), 
+    """Convert mp3 in `in_path` (e.g. produced by translation) into an OGG file in `out_path` matching Tiptoi's parameters (`quality, sampling_rate`).
+
+    Args:
+        in_path: Path to the input mp3 audio file
+        out_path: Path to the output ogg audio file
+        quality: Vorbis quality setting, the default value matches Tiptoi's files
+        sampling_rate: The default value matches Tiptoi's files
+        volume: Compensate seemingly quieter translated mp3 files with this factor, the default value seems to match Tiptoi files
+    """
+    cmd = ["ffmpeg", "-y", "-hide_banner", "-i", in_path, "-c:a", "libvorbis", "-q:a", str(quality),
            "-ar", str(sampling_rate), "-filter:a", f"volume={volume}", out_path]
 
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
