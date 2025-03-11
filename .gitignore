@@ -2,7 +2,7 @@ gme
 ogg
 venv
 *.pyc
-s2st_tests/*.ogg
+s2st_tests_
 SeamlessExpressive
 tmp
 libtiptoi
