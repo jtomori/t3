@@ -46,7 +46,7 @@ def check_audio_length(audio_path: str, max_length: float = 50) -> bool:
 
 
 def convert_mp3_to_ogg(in_path: str, out_path: str, *, quality: int = 0,
-                       sampling_rate: int = 22_050, volume: float = 1.75) -> None:
+                       sampling_rate: int = 22_050, volume: float = 2.3) -> None:
     """TBD"""
     cmd = ["ffmpeg", "-y", "-hide_banner", "-i", in_path, "-c:a", "libvorbis", "-q:a", str(quality), 
            "-ar", str(sampling_rate), "-filter:a", f"volume={volume}", out_path]
