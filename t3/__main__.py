@@ -81,6 +81,9 @@ def main():
     log.info(f"Created filelist `{filelist_path}`")
 
     # Insert new audios into the GME
+    new_gme_path = create_gme(args.work_dir, filelist_path, args.input_gme_path)
+    log.info(f"Created translated GME `{new_gme_path}`")
+    log.info("Done")
 
 
 def checks(args) -> None:
@@ -196,6 +199,25 @@ def prepare_filelist(extracted_dir: str, final_dir: str) -> str:
         f.writelines(filelist_dst)
 
     return path_dst
+
+
+def create_gme(workdir_path: str, filelist_path: str, input_gme_path: str) -> str:
+    """TBD"""
+    file_name = os.path.basename(input_gme_path)
+    file_name_base, _ = os.path.splitext(file_name)
+
+    new_path = os.path.join(workdir_path, f"{file_name_base} (eng).gme")
+
+    cmd = ["./libtiptoi", "r", filelist_path, new_path, input_gme_path]
+
+    try:
+        subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as exc:
+        # libtiptoi returns 1 upon success
+        if exc.returncode == 1:
+            pass
+
+    return new_path
 
 
 if __name__ == "__main__":
