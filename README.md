@@ -11,13 +11,14 @@
 ## Development
 
 ### Manual setup
+- Clone this repo with submodules: `git clone --recurse-submodules git@github.com:jtomori/t3.git`
 - `sudo apt install sox ffmpeg`
 - `pip install numpy typing_extensions`
 - `pip install -r requirements.txt`
 - Store [SeamlessExpressive](https://huggingface.co/facebook/seamless-expressive) models in the `SeamlessExpressive` folder in repository's root
 - Compile `libtiptoi.c`: `gcc tip-toi-reveng/libtiptoi.c -o libtiptoi`
 
-### Docker
+### Docker (WIP)
 - Build image with `docker build -t t3 .`
 - Run container with `docker run --volume ./SeamlessExpressive:/app/SeamlessExpressive --volume ./gme:/app/gme --volume ./workdir:/app/workdir --rm --name t3 t3 gme/name_of_file.gme workdir`
   - Make sure that `gme, SeamlessExpressive, workdir` directories are present in your current directory
@@ -26,3 +27,8 @@
 ### Tests & code checks
 - `python tests.py`
 - `./checks.sh`
+
+## Releases
+
+### v1.0 - 2025-03-11
+- Initial release
