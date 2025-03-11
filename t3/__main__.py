@@ -76,10 +76,9 @@ def main():
     # Build report
     # TODO
 
-    # Copy filelist
-    filelist_src, filelist_dst = os.path.join(extracted_dir, "filelist.txt"), os.path.join(final_dir, "filelist.txt")
-    shutil.copyfile(filelist_src, filelist_dst)
-    log.info(f"Copied '{filelist_src}' -> '{filelist_dst}'")
+    # Create filelist
+    filelist_path = prepare_filelist(extracted_dir, final_dir)
+    log.info(f"Created filelist `{filelist_path}`")
 
     # Insert new audios into the GME
 
@@ -178,6 +177,25 @@ def convert_to_ogg(translated: list[s2st.TranslatedAudio], final_dir: str):
             out_path = os.path.join(final_dir, f"{file_name_base}.ogg")
 
             e.submit(audio_utils.convert_mp3_to_ogg, in_path, out_path)
+
+
+def prepare_filelist(extracted_dir: str, final_dir: str) -> str:
+    """TBD"""
+    path_src = os.path.join(extracted_dir, "filelist.txt")
+    path_dst = os.path.join(final_dir, "filelist.txt")
+
+    # Read original list
+    with open(path_src, encoding="utf-8") as f:
+        filelist_src = f.readlines()
+
+    # Update paths
+    filelist_dst = [line.replace(extracted_dir, final_dir) for line in filelist_src]
+
+    # Save the updated list to the new path
+    with open(path_dst, "w", encoding="utf-8") as f:
+        f.writelines(filelist_dst)
+
+    return path_dst
 
 
 if __name__ == "__main__":
