@@ -1,0 +1,3 @@
+[submodule "tip-toi-reveng"]
+	path = tip-toi-reveng
+	url = git@github.com:entropia/tip-toi-reveng.git

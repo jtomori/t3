@@ -1,0 +1,8 @@
+gme
+ogg
+venv
+*.pyc
+s2st_tests/*.ogg
+SeamlessExpressive
+tmp
+libtiptoi
