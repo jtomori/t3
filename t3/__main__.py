@@ -4,6 +4,8 @@ import logging
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
 import os
+import csv
+import sox
 import glob
 import shutil
 import argparse
@@ -74,7 +76,8 @@ def main() -> None:
     log.info(f"Converted translated mp3 files into ogg files in '{final_dir}'")
 
     # Build report
-    # TODO
+    report_path = csv_report(ogg_paths, too_long, speech, translated, args.work_dir)
+    log.info(f"Saved a CSV report into '{report_path}'")
 
     # Create filelist
     filelist_path = prepare_filelist(extracted_dir, final_dir)
@@ -231,6 +234,54 @@ def convert_to_ogg(translated: list[s2st.TranslatedAudio], final_dir: str) -> No
             out_path = os.path.join(final_dir, f"{file_name_base}.ogg")
 
             e.submit(audio_utils.convert_mp3_to_ogg, in_path, out_path)
+
+
+def csv_report(ogg_paths: list[str], too_long: list[str], speech: list[str], translated: list[s2st.TranslatedAudio], work_dir: str) -> str:  # pylint: disable=too-many-locals
+    """Create a CSV report in `work_dir` with info about each audio file's duration, category and transcript.
+
+    Args:
+        ogg_paths: List of paths of all extracted OGG files
+        too_long: List of paths of files which have been classified as too long
+        speech: List of paths of files which have been classified to contain voice
+        translated: List of paths, text pairs of translated files
+        work_dir: Path of the working directory, where the CSV report will be saved into
+
+    Returns:
+        File path of the CSV report
+    """
+    # Create rows
+    rows = []
+
+    for ogg in sorted(ogg_paths):
+        filename = os.path.basename(ogg)
+        name, _ = os.path.splitext(filename)
+
+        duration = sox.file_info.duration(ogg)
+
+        if ogg in too_long:
+            category = "Too long"
+        elif ogg in speech:
+            category = "Speech"
+        else:
+            category = "Sound"
+
+        text = ""
+        for tr in translated:
+            if name in tr.path:
+                text = tr.text
+                break
+
+        rows.append((name, duration, category, text))
+
+    # Save into CSV
+    csv_path = os.path.join(work_dir, "report.csv")
+    with open(csv_path, "w", encoding="utf-8") as f:
+        csv_writer = csv.writer(f, delimiter=",")
+
+        csv_writer.writerow(["OGG file", "Duration", "Category", "Transcript"])  # Header
+        csv_writer.writerows(rows)  # Data
+
+    return csv_path
 
 
 def prepare_filelist(extracted_dir: str, final_dir: str) -> str:
