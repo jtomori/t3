@@ -31,7 +31,7 @@ def main():
 
     # Perform initial checks
     log.info("Performing initial checks")
-    checks()
+    checks(args)
 
     # Create folder structure
     extracted_dir, translated_dir, final_dir = create_folders(args.work_dir)
@@ -84,13 +84,18 @@ def main():
     # Insert new audios into the GME
 
 
-def checks() -> None:
+def checks(args) -> None:
     """Perform initial checks to make sure everything's been correctly set up.
 
     Raises:
         AssertionError: Indicates a failed check
     """
     assert os.path.exists("SeamlessExpressive"), "The SeamlessExpressive folder was not found in repository's root. Please check README.md for setup instructions."
+
+    # libtiptoi breaks with spaces in paths
+    if " " in args.work_dir:
+        log.warning(f"Space was detected in the 'work_dir' argument, it's being replaced with underscore")
+        args.work_dir = args.work_dir.replace(" ", "_")
 
 
 def create_folders(work_dir: str) -> None:
