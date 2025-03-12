@@ -18,11 +18,13 @@
 - Store [SeamlessExpressive](https://huggingface.co/facebook/seamless-expressive) models in the `SeamlessExpressive` folder in repository's root
 - Compile `libtiptoi.c`: `gcc tip-toi-reveng/libtiptoi.c -o libtiptoi`
 
-### Docker (WIP)
+### Docker
+- GPU inference requires [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 - Build image with `docker build -t t3 .`
-- Run container with `docker run --volume ./SeamlessExpressive:/app/SeamlessExpressive --volume ./gme:/app/gme --volume ./workdir:/app/workdir --rm --name t3 t3 gme/name_of_file.gme workdir`
+- Run container with `docker run --runtime=nvidia --gpus all --volume ./SeamlessExpressive:/app/SeamlessExpressive --volume ./gme:/app/gme --volume ./workdir:/app/workdir --rm --name t3 t3 gme/name_of_file.gme workdir`
   - Make sure that `gme, SeamlessExpressive, workdir` directories are present in your current directory
   - `workdir` will contain translated GME file along with intermediate files, CSV report
+  - Omit `--runtime=nvidia --gpus all` for performing a CPU inference
 
 ### Tests & code checks
 - `python tests.py`
