@@ -6,6 +6,7 @@ Inference is based on: https://github.com/facebookresearch/seamless_communicatio
 
 import os
 import torch
+import logging
 import argparse
 import torchaudio
 from tqdm import tqdm
@@ -19,6 +20,9 @@ from seamless_communication.models.unity import load_gcmvn_stats, load_unity_uni
 from seamless_communication.cli.m4t.predict import set_generation_opts, add_inference_arguments
 from seamless_communication.cli.expressivity.predict.pretssel_generator import PretsselGenerator
 from seamless_communication.cli.expressivity.predict.predict import remove_prosody_tokens_from_text
+
+
+log = logging.getLogger(__name__)
 
 
 class TranslatedAudio(NamedTuple):
@@ -58,6 +62,8 @@ def translate_audio_files(input_paths: list[str],  # pylint: disable=too-many-ar
     if force_cpu:  # For tests
         device = torch.device("cpu")
         dtype = torch.float32
+
+    log.info(f"Using {device.type.upper()} for inference")
 
     unit_tokenizer = load_unity_unit_tokenizer(model_name)
 
