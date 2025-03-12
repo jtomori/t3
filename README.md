@@ -32,5 +32,8 @@
 
 ## Releases
 
+### v1.1 - 2025-03-12
+- Finished setup for running GPU (or CPU) inference from a Docker container
+
 ### v1.0 - 2025-03-11
 - Initial release
